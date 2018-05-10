@@ -1,0 +1,7 @@
+CRM = {
+    'freshdesk': {
+        'domain': 'your domain',
+        'api_key': 'your api key',
+        'password': 'your password'
+    }
+}
