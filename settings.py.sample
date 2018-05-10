@@ -6,3 +6,15 @@ IOS_APPS = {
         'id': 'dummy app id'
     }
 }
+
+
+ANDROID_APPS = {
+    'consumer': {
+        'packageName': 'dummy package name',
+        'credentials': {}
+    },
+    'provider': {
+        'packageName': 'dummy package name',
+        'credentials': {}
+    }
+}
