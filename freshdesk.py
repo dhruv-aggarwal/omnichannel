@@ -12,7 +12,7 @@ class Freshdesk:
         )
         self.fetch_url = 'tickets'
         self.page_size = 100
-        self.page_limit = 10
+        self.page_limit = 100
         self.source_map = {
             '1': 'Email',
             '2': 'Portal',
@@ -38,7 +38,7 @@ class Freshdesk:
     def fetch_tickets(self):
         page = 0
         responses = []
-        while page < self.page_limit:
+        while 1:
             page += 1
             response = requests.get(
                 self.base_url + self.fetch_url,
@@ -50,6 +50,8 @@ class Freshdesk:
                 },
                 auth=(self.api_key, self.password)
             )
+            if not response.json():
+                break
             responses += response.json()
         return self.parse_response(responses)
 
