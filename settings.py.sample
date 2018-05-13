@@ -5,3 +5,5 @@ CRM = {
         'password': 'your password'
     }
 }
+
+BACKEND = 'csv'

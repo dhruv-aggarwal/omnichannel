@@ -1,9 +1,11 @@
 import requests
 from settings import CRM
+from base import Base
 
 
-class Freshdesk:
+class Freshdesk(Base):
     def __init__(self):
+        super(Freshdesk, self).__init__()
         self.domain = CRM['freshdesk']['domain']
         self.api_key = CRM['freshdesk']['api_key']
         self.password = CRM['freshdesk']['password']
