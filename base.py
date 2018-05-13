@@ -1,11 +1,13 @@
 import csv
 import time
 from settings import BACKEND
+from wordcloud import WordCloud
 
 
 class Base(object):
     def __init__(self):
         self.backend = BACKEND
+        self.wc = WordCloud()
 
     def save_data(self, list_of_dict):
         if self.backend == 'csv':
@@ -23,3 +25,6 @@ class Base(object):
             dict_writer = csv.DictWriter(output_file, keys)
             dict_writer.writeheader()
             dict_writer.writerows(toCSV)
+
+    def get_word_frequencies(self, text):
+        return self.wc.process_text(text)
