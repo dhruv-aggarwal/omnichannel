@@ -7,3 +7,11 @@ CRM = {
 }
 
 BACKEND = 'csv'
+IOS_APPS = {
+    'consumer': {
+        'id': 'dummy app id'
+    },
+    'provider': {
+        'id': 'dummy app id'
+    }
+}
