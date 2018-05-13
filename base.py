@@ -26,5 +26,5 @@ class Base(object):
             dict_writer.writeheader()
             dict_writer.writerows(toCSV)
 
-    def get_word_frequencies(self, text):
-        return self.wc.process_text(text)
+    def get_word_frequencies(self, text_list):
+        return self.wc.process_text('\n'.join(text_list))
