@@ -1,6 +1,6 @@
 import requests
 from settings import CRM
-from ..base_client import BaseClient
+from ..base import BaseClient
 
 
 class FreshdeskClient(BaseClient):

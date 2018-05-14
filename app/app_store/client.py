@@ -1,6 +1,6 @@
 import requests
 from settings import IOS_APPS
-from ..base_client import BaseClient
+from ..base import BaseClient
 
 
 class AppStoreClient(BaseClient):
