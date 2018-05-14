@@ -1,13 +1,15 @@
 import requests
-from settings import ANDROID_APPS
+from settings import IOS_APPS
+from ..base_client import BaseClient
 
 
-class PlayStore:
+class AppStoreClient(BaseClient):
     def __init__(self):
-        self.base_url = 'https://www.googleapis.com/androidpublisher/v3/'
-        self.fetch_url = 'applications/{package_name}/reviews'
+        super(Freshdesk, self).__init__()
+        self.base_url = 'https://itunes.apple.com/'
+        self.fetch_url = '{country}/rss/customerreviews/page={page}/id={app_id}/sortby={sorting_order}/{data_format}'
         self.page_limit = 10
-        self.apps = ANDROID_APPS
+        self.apps = IOS_APPS
 
     def fetch_reviews(self, app_id, country, data_format, sorting_order):
         page = 0
@@ -23,7 +25,6 @@ class PlayStore:
                     country=country
                 )
             )
-            # print response.json()
             responses.append(response.json())
         return self.parse_response(responses)
 
