@@ -1,7 +1,6 @@
 import csv
 import time
-from settings import BACKEND, AZURE
-from wordcloud import WordCloud
+from ..settings import BACKEND, AZURE
 import nltk
 nltk.download('vader_lexicon')
 nltk.download('punkt')
@@ -13,14 +12,15 @@ from google.cloud import language
 from google.cloud.language import enums
 from google.cloud.language import types
 from ..utils.stopwords import STOPWORDS
-from ..utils.tokenization import unigrams_and_bigrams, process_tokens
+from ..utils.tokenization import (
+    unigrams_and_bigrams, process_tokens, sort_dict_by_value, filter_words
+)
 import re
 
 
 class BaseClient(object):
     def __init__(self):
         self.backend = BACKEND
-        self.wc = WordCloud()
         self.sid = SentimentIntensityAnalyzer()
         self.azure = AZURE
         self.stopwords = STOPWORDS
@@ -42,7 +42,12 @@ class BaseClient(object):
             dict_writer.writeheader()
             dict_writer.writerows(toCSV)
 
-    def preprocess_text(self, text_list, collocations=True):
+    def create_word_cloud(self, text_list, min_frequency=10, max_words=100):
+        word_counts = self.preprocess_text(text_list)
+        sorted_word_counts = sort_dict_by_value(word_counts)
+        return filter_words(sorted_word_counts, min_frequency, max_words)
+
+    def preprocess_text(self, text_list):
         """Splits a long text into words, eliminates the stopwords.
 
         Parameters
@@ -70,11 +75,7 @@ class BaseClient(object):
                  for word in words]
         # remove numbers
         words = [word for word in words if not word.isdigit()]
-
-        if collocations:
-            word_counts = unigrams_and_bigrams(words)
-        else:
-            word_counts, _ = process_tokens(words)
+        word_counts = unigrams_and_bigrams(words)
 
         return word_counts
 

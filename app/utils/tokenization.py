@@ -1,7 +1,7 @@
 from __future__ import division
 from itertools import tee
 from operator import itemgetter
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from math import log
 
 
@@ -34,6 +34,33 @@ def pairwise(iterable):
     a, b = tee(iterable)
     next(b, None)
     return zip(a, b)
+
+
+def filter_words(sorted_word_counts, min_frequency, max_words, order='desc'):
+    rv = {}
+    count = 0
+    for key, value in sorted_word_counts.iteritems():
+        if value < min_frequency or count >= max_words:
+            break
+        count += 1
+        rv[key] = value
+    if order == 'desc':
+        return OrderedDict(
+            sorted(rv.items(), key=lambda kv: kv[1], reverse=True)
+        )
+    else:
+        return OrderedDict(sorted(rv.items(), key=lambda kv: kv[1]))
+
+
+def sort_dict_by_value(input_dict, order='desc'):
+    if order == 'desc':
+        return OrderedDict(
+            sorted(input_dict.items(), key=lambda kv: kv[1], reverse=True)
+        )
+    else:
+        return OrderedDict(
+            sorted(input_dict.items(), key=lambda kv: kv[1])
+        )
 
 
 def unigrams_and_bigrams(words, normalize_plurals=True):
