@@ -12,6 +12,9 @@ import collections
 from google.cloud import language
 from google.cloud.language import enums
 from google.cloud.language import types
+from ..utils.stopwords import STOPWORDS
+from ..utils.tokenization import unigrams_and_bigrams, process_tokens
+import re
 
 
 class BaseClient(object):
@@ -20,6 +23,7 @@ class BaseClient(object):
         self.wc = WordCloud()
         self.sid = SentimentIntensityAnalyzer()
         self.azure = AZURE
+        self.stopwords = STOPWORDS
 
     def save_data(self, list_of_dict):
         if self.backend == 'csv':
@@ -38,8 +42,41 @@ class BaseClient(object):
             dict_writer.writeheader()
             dict_writer.writerows(toCSV)
 
-    def get_word_frequencies(self, text_list):
-        return self.wc.process_text('\n'.join(text_list))
+    def preprocess_text(self, text_list, collocations=True):
+        """Splits a long text into words, eliminates the stopwords.
+
+        Parameters
+        ----------
+        text : string
+            The text to be processed.
+
+        Returns
+        -------
+        words : dict (string, int)
+            Word tokens with associated frequency.
+        """
+        text = '\n'.join(text_list)
+
+        stopwords = set([i.lower() for i in self.stopwords])
+
+        flags = (re.UNICODE if type(text) is unicode else 0)
+        regexp = r"\w[\w']+"
+
+        words = re.findall(regexp, text, flags)
+        # remove stopwords
+        words = [word for word in words if word.lower() not in stopwords]
+        # remove 's
+        words = [word[:-2] if word.lower().endswith("'s") else word
+                 for word in words]
+        # remove numbers
+        words = [word for word in words if not word.isdigit()]
+
+        if collocations:
+            word_counts = unigrams_and_bigrams(words)
+        else:
+            word_counts, _ = process_tokens(words)
+
+        return word_counts
 
     def get_sentiment_score_from_nltk(self, text_list):
         sentiments = []
