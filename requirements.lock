@@ -11,3 +11,6 @@ mysqlclient==1.3.12
 nltk==3.3
 google-cloud-language==0.26.0
 ipython==5.4.1
+#https://github.com/coderadi/FabPolish/archive/v1.2.2.zip
+uwsgi==2.0.17
+flask-script==2.0.6

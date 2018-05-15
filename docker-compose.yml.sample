@@ -1,19 +1,19 @@
 version: '2'
 services:
-  web:
+  app:
     build: .
     volumes:
-      - .:/www/app
+      - .:/www/omnichannel
     depends_on:
       - mysql
     links:
       - mysql
     ports:
-      - "8001:80"
+      - 1786:1786
 
   mysql:
       image: mysql/mysql-server:5.7
       environment:
         - MYSQL_ALLOW_EMPTY_PASSWORD=true
-        - MYSQL_DATABASE=flask_app
-        - MYSQL_ROOT_HOST=%
+        - MYSQL_DATABASE=omnichannel
+        - MYSQL_ROOT_HOST=localhost

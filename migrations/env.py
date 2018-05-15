@@ -4,6 +4,8 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 from logging.config import fileConfig
 import logging
+from app.app import create_app
+from app.db import db
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -19,14 +21,35 @@ logger = logging.getLogger('alembic.env')
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 
+try:
+    app = current_app._get_current_object()
+except RuntimeError:
+    app = create_app()
 config.set_main_option('sqlalchemy.url',
-                       current_app.config.get('SQLALCHEMY_DATABASE_URI'))
-target_metadata = current_app.extensions['migrate'].db.metadata
+                       app.config.get('SQLALCHEMY_DATABASE_URI'))
+target_metadata = db.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
+def compare_type(context, inspected_column, metadata_column, inspected_type,
+                 metadata_type):
+    if type(metadata_type) == db.Boolean:
+        if type(inspected_type) == mysql.base.TINYINT:
+            return False
+
+
+def compare_server_default(context, inspected_column, metadata_column,
+                           inspected_default, metadata_default,
+                           rendered_metadata_default):
+    if type(metadata_column.type) == db.Boolean:
+        if type(inspected_column['type']) == mysql.base.TINYINT:
+            if inspected_default == "'1'":
+                return metadata_default == true
+            elif inspected_default == "'0'":
+                return metadata_default == false
 
 
 def run_migrations_offline():
@@ -71,10 +94,14 @@ def run_migrations_online():
                                 poolclass=pool.NullPool)
 
     connection = engine.connect()
-    context.configure(connection=connection,
-                      target_metadata=target_metadata,
-                      process_revision_directives=process_revision_directives,
-                      **current_app.extensions['migrate'].configure_args)
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        compare_type=compare_type,
+        compare_server_default=compare_server_default,
+        # process_revision_directives=process_revision_directives,
+        # **app.extensions['migrate'].configure_args
+    )
 
     try:
         with context.begin_transaction():
