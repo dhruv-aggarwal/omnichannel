@@ -5,7 +5,7 @@ from ..base import BaseClient
 
 class AppStoreClient(BaseClient):
     def __init__(self):
-        super(Freshdesk, self).__init__()
+        super(AppStoreClient, self).__init__()
         self.base_url = 'https://itunes.apple.com/'
         self.fetch_url = '{country}/rss/customerreviews/page={page}/id={app_id}/sortby={sorting_order}/{data_format}'
         self.page_limit = 10

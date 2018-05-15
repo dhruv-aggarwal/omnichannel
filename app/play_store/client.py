@@ -5,7 +5,7 @@ from ..base import BaseClient
 
 class PlayStoreClient(BaseClient):
     def __init__(self):
-        super(Freshdesk, self).__init__()
+        super(PlayStoreClient, self).__init__()
         self.base_url = 'https://www.googleapis.com/androidpublisher'
         self.api_version = 'v3'
         self.package_name = 'my_package_name'
