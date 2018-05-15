@@ -1,9 +1,9 @@
 IOS_APPS = {
     'consumer': {
-        'id': 'dummy',
+        'id': 'dummy app id'
     },
     'provider': {
-        'id': 'dummy'
+        'id': 'dummy app id'
     }
 }
 
@@ -20,9 +20,9 @@ ANDROID_APPS = {
 
 CRM = {
     'freshdesk': {
-        'domain': 'dummy',
-        'api_key': 'dummy',
-        'password': 'dummy'
+        'domain': 'your domain',
+        'api_key': 'your api key',
+        'password': 'your password'
     }
 }
 
@@ -34,6 +34,13 @@ TWITTER = {
     'practo_ids': [],
 }
 
+AZURE = {
+    'url': "https://westcentralus.api.cognitive.microsoft.com/text/analytics",
+    'api_version': "v2.0",
+    'keys': ['key1', 'key2'],
+    'sentiment_url_suffix': 'sentiment'
+}
+
 BACKEND = 'csv'
 
 APP_NAME = 'app'
@@ -43,7 +50,7 @@ TESTING = False
 
 # SQLAlchemy configs
 DB_HOST = 'mysql'
-DB_NAME = 'dummy'
+DB_NAME = 'omnichannel'
 DB_USER = 'root'
 DB_PASS = ''
 SQLALCHEMY_DATABASE_URI = 'mysql://{}:{}@{}/{}'.format(
