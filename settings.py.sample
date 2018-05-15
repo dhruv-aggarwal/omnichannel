@@ -1,11 +1,3 @@
-CRM = {
-    'freshdesk': {
-        'domain': 'your domain',
-        'api_key': 'your api key',
-        'password': 'your password'
-    }
-}
-BACKEND = 'csv'
 IOS_APPS = {
     'consumer': {
         'id': 'dummy app id'
@@ -14,6 +6,7 @@ IOS_APPS = {
         'id': 'dummy app id'
     }
 }
+
 ANDROID_APPS = {
     'consumer': {
         'packageName': 'dummy package name',
@@ -24,10 +17,43 @@ ANDROID_APPS = {
         'credentials': {}
     }
 }
-TWITTER = {
-    'consumer_key' : 'xyz'
-    'consumer_secret' : 'xyz'
-    'access_token' : 'xyz'
-    'access_token_secret' : 'xyz',
-    'practo_ids' = [],
+
+CRM = {
+    'freshdesk': {
+        'domain': 'your domain',
+        'api_key': 'your api key',
+        'password': 'your password'
+    }
 }
+
+TWITTER = {
+    'consumer_key': 'dummy',
+    'consumer_secret': 'dummy',
+    'access_token': 'dummy',
+    'access_token_secret': 'dummy',
+    'practo_ids': [],
+}
+
+AZURE = {
+    'url': "https://westcentralus.api.cognitive.microsoft.com/text/analytics",
+    'api_version': "v2.0",
+    'keys': ['key1', 'key2'],
+    'sentiment_url_suffix': 'sentiment'
+}
+
+BACKEND = 'csv'
+
+APP_NAME = 'app'
+
+DEBUG = False
+TESTING = False
+
+# SQLAlchemy configs
+DB_HOST = 'mysql'
+DB_NAME = 'omnichannel'
+DB_USER = 'root'
+DB_PASS = ''
+SQLALCHEMY_DATABASE_URI = 'mysql://{}:{}@{}/{}'.format(
+    DB_USER, DB_PASS, DB_HOST, DB_NAME
+)
+SQLALCHEMY_TRACK_MODIFICATIONS = False

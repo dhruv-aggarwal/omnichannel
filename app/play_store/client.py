@@ -1,13 +1,17 @@
 import requests
-from settings import IOS_APPS
+from settings import ANDROID_APPS
+from ..base import BaseClient
 
 
-class AppStore:
+class PlayStoreClient(BaseClient):
     def __init__(self):
-        self.base_url = 'https://itunes.apple.com/'
-        self.fetch_url = '{country}/rss/customerreviews/page={page}/id={app_id}/sortby={sorting_order}/{data_format}'
+        super(PlayStoreClient, self).__init__()
+        self.base_url = 'https://www.googleapis.com/androidpublisher'
+        self.api_version = 'v3'
+        self.package_name = 'my_package_name'
+        self.fetch_url = 'applications/{0}/reviews'.format(self.package_name)
         self.page_limit = 10
-        self.apps = IOS_APPS
+        self.apps = ANDROID_APPS
 
     def fetch_reviews(self, app_id, country, data_format, sorting_order):
         page = 0
@@ -15,12 +19,10 @@ class AppStore:
         while page < self.page_limit:
             page += 1
             response = requests.get(
-                self.base_url + self.fetch_url.format(
-                    page=page,
-                    app_id=app_id,
-                    sorting_order=sorting_order,
-                    data_format=data_format,
-                    country=country
+                "{0}/{1}/{2}".format(
+                    self.base_url,
+                    self.api_version,
+                    self.fetch_url
                 )
             )
             # print response.json()
