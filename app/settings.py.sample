@@ -1,11 +1,21 @@
-IOS_APPS = {
-    'consumer': {
-        'id': 'dummy',
-    },
-    'provider': {
-        'id': 'dummy'
+CRM = {
+    'freshdesk': {
+        'domain': 'your domain',
+        'api_key': 'your api key',
+        'password': 'your password'
     }
 }
+
+BACKEND = 'csv'
+IOS_APPS = {
+    'consumer': {
+        'id': 'dummy app id'
+    },
+    'provider': {
+        'id': 'dummy app id'
+    }
+}
+
 
 ANDROID_APPS = {
     'consumer': {
@@ -18,16 +28,6 @@ ANDROID_APPS = {
     }
 }
 
-CRM = {
-    'freshdesk': {
-        'domain': 'dummy',
-        'api_key': 'dummy',
-        'password': 'dummy'
-    }
-}
-
-BACKEND = 'csv'
-
 APP_NAME = 'app'
 
 DEBUG = False
@@ -35,10 +35,17 @@ TESTING = False
 
 # SQLAlchemy configs
 DB_HOST = 'mysql'
-DB_NAME = 'dummy'
+DB_NAME = 'omnichannel'
 DB_USER = 'root'
 DB_PASS = ''
 SQLALCHEMY_DATABASE_URI = 'mysql://{}:{}@{}/{}'.format(
     DB_USER, DB_PASS, DB_HOST, DB_NAME
 )
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+AZURE = {
+    'url': "https://westcentralus.api.cognitive.microsoft.com/text/analytics",
+    'api_version': "v2.0",
+    'keys': ['key1', 'key2'],
+    'sentiment_url_suffix': 'sentiment'
+}
