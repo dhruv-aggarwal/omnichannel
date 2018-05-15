@@ -1,17 +1,20 @@
 import requests
 from settings import CRM
-from base import Base
+from ..base import BaseClient
 
 
-class Freshdesk(Base):
+class FreshdeskClient(BaseClient):
     def __init__(self):
         super(Freshdesk, self).__init__()
         self.domain = CRM['freshdesk']['domain']
         self.api_key = CRM['freshdesk']['api_key']
         self.password = CRM['freshdesk']['password']
-        self.base_url = 'https://{domain}.freshdesk.com/api/v2/'.format(
-            domain=self.domain
-        )
+        self.api_version = 'v2'
+        self.base_url = \
+            'https://{domain}.freshdesk.com/api/{api_version}/'.format(
+                domain=self.domain,
+                api_version=self.api_version
+            )
         self.fetch_url = 'tickets'
         self.page_size = 100
         self.page_limit = 100

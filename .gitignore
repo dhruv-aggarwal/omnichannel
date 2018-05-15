@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# App configs
+app/configs.py
+docker-compose.yml
+
 # C extensions
 *.so
 settings.py

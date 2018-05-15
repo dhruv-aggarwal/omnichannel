@@ -4,7 +4,7 @@ from settings import BACKEND
 from wordcloud import WordCloud
 
 
-class Base(object):
+class BaseClient(object):
     def __init__(self):
         self.backend = BACKEND
         self.wc = WordCloud()
