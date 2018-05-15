@@ -1,22 +1,48 @@
-FROM python:2.7.15-alpine3.4
+FROM python:2.7.15
 
-COPY . /www/app
+ENV product omnichannel
+ENV repo_root /www/omnichannel
+ENV requirements_file $repo_root/requirements.lock
+ENV secrets_file $repo_root/settings.py
+ENV uwsgi_file $repo_root/uwsgi.ini
 
-WORKDIR /www/app
+WORKDIR $repo_root
 
-ENV UWSGI_INI /www/app/uwsgi.ini
+# Get and install required packages.
+RUN apt-get update && apt-get install -y -q \
+    build-essential \
+    python-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    zlib1g-dev \
+    wget && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    apt-get autoclean && \
+    echo -n > /var/lib/apt/extended_states && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /usr/share/man/?? && \
+    rm -rf /usr/share/man/??_*
 
-RUN apk --no-cache add --virtual build-dependencies \
-      build-base \
-      libfreetype6-dev \
-      py-mysqldb \
-      gcc \
-      libc-dev \
-      libffi-dev \
-      mariadb-dev
-RUN pip install -qq -r requirements.lock
-RUN rm -rf .cache/pip && apk del build-dependencies
+# It is an image dedicated to python.
+# To avoid version conflicts of packages installed from apt-get
+# and pip install, it is better to not install pip from apt-get.
+# Also, python-pip ships with pip 1.5.4 :'(
+RUN wget https://bootstrap.pypa.io/get-pip.py
+RUN python get-pip.py
+RUN rm get-pip.py
 
-RUN apk -q --no-cache add mariadb-client-libs
-# Install dependencies
-#RUN pip install -r requirements.lock
+# Install python deps
+RUN apt-get update && apt-get install -y curl git libmysqlclient-dev \
+    libssl-dev libffi-dev libpq-dev libjpeg-dev && \
+    pip install cffi
+
+COPY requirements.lock .
+RUN pip install -r requirements.lock
+
+COPY . $repo_root
+
+ADD docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+EXPOSE 1786
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+

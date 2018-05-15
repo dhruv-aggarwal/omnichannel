@@ -26,6 +26,14 @@ CRM = {
     }
 }
 
+TWITTER = {
+    'consumer_key': 'dummy',
+    'consumer_secret': 'dummy',
+    'access_token': 'dummy',
+    'access_token_secret': 'dummy',
+    'practo_ids': [],
+}
+
 BACKEND = 'csv'
 
 APP_NAME = 'app'
