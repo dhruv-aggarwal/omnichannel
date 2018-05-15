@@ -2,5 +2,6 @@ TWITTER = {
     'consumer_key' : 'xyz'
     'consumer_secret' : 'xyz'
     'access_token' : 'xyz'
-    'access_token_secret' : 'xyz'
+    'access_token_secret' : 'xyz',
+    'practo_ids' = [],
 }

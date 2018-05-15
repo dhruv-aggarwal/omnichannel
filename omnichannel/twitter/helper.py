@@ -1,6 +1,7 @@
 # from textblob import TextBlob
 import re
-from ..helper import TwitterClient
+from .client import TwitterClient
+from settings import TWITTER
 
 
 # def get_tweet_sentiment(tweet):
@@ -60,29 +61,42 @@ from ..helper import TwitterClient
 def parse_tweets(tweets):
     parsed_tweets = []
 
-    # parsing tweets one by one
     for tweet in tweets:
-        # empty dictionary to store required params of a tweet
-        parsed_tweet = {}
+        if tweet.author.id in TWITTER['practo_ids']:
+            continue
 
-        # saving text of tweet
-        parsed_tweet['text'] = tweet.text
+        parsed_tweet = {
+            'twitter_id': tweet.id,
+            'text': tweet.text,
+            'created_at': tweet.created_at,
+            'author': {
+                'twitter_id': tweet.author.id,
+                'name': tweet.author.name,
+                'created_at': tweet.author.created_at,
+                'location': tweet.author.location,
+                'screen_name': tweet.author.screen_name,
+            },
+            'language': tweet.lang,
+            'favorite_count': tweet.favorite_count,
+            'retweet_count': tweet.retweet_count,
+            'reply_to_author_id': tweet.in_reply_to_user_id,
+            'reply_to_twitter_id': tweet.in_reply_to_status_id,
+        }
+
         # saving sentiment of tweet
         # parsed_tweet['sentiment'] = get_tweet_sentiment(clean_tweet(tweet.text))
 
-        # appending parsed tweet to tweets list
         if tweet.retweet_count > 0:
             # if tweet has retweets, ensure that it is appended only once
-            if parsed_tweet not in tweets:
-                tweets.append(parsed_tweet)
+            if parsed_tweet not in parsed_tweets:
+                parsed_tweets.append(parsed_tweet)
         else:
-            tweets.append(parsed_tweet)
+            parsed_tweets.append(parsed_tweet)
 
-    # return parsed tweets
     return parsed_tweets
 
 
-def get_tweets(query, count):
+def get_tweets(query, count=None):
     '''
     Main function to fetch tweets and parse them.
     '''

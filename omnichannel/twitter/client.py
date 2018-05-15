@@ -1,5 +1,5 @@
 from settings import TWITTER
-from tweepy import API, OAuthHandler, TweepError
+import tweepy
 
 
 class TwitterClient:
@@ -27,20 +27,21 @@ class TwitterClient:
             # create tweepy API object to fetch tweets
             self.api = tweepy.API(self.auth)
         except:
-            raise('Error: Authentication Failed')
+            raise Exception('Authentication Failed')
 
 
-    def fetch_tweets(self, query, count=self.page_size):
+    def fetch_tweets(self, query, count):
         '''
         Call Twitter API to fetch tweets
         '''
+        count = count or self.page_size
         fetched_tweets = []
         try:
             fetched_tweets = self.api.search(
                 q=query,
                 count=count,
             )
-        except TweepError as e:
+        except tweepy.TweepError as e:
             print("Error : {error}".format(error=e))
 
         return fetched_tweets
