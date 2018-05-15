@@ -1,7 +1,6 @@
 import csv
 import time
-from settings import BACKEND, AZURE
-from wordcloud import WordCloud
+from ..settings import BACKEND, AZURE
 import nltk
 nltk.download('vader_lexicon')
 nltk.download('punkt')
@@ -12,14 +11,21 @@ import collections
 from google.cloud import language
 from google.cloud.language import enums
 from google.cloud.language import types
+from ..utils.stopwords import STOPWORDS
+from ..utils.tokenization import (
+    unigrams_and_bigrams, process_tokens, sort_dict_by_value, filter_words
+)
+import re
+from nltk.corpus import stopwords as nltk_stopwords
+from nltk.tokenize import wordpunct_tokenize
 
 
 class BaseClient(object):
     def __init__(self):
         self.backend = BACKEND
-        self.wc = WordCloud()
         self.sid = SentimentIntensityAnalyzer()
         self.azure = AZURE
+        self.stopwords = STOPWORDS
 
     def save_data(self, list_of_dict):
         if self.backend == 'csv':
@@ -38,8 +44,41 @@ class BaseClient(object):
             dict_writer.writeheader()
             dict_writer.writerows(toCSV)
 
-    def get_word_frequencies(self, text_list):
-        return self.wc.process_text('\n'.join(text_list))
+    def create_word_cloud(self, text_list, min_frequency=10, max_words=100):
+        word_counts = self.preprocess_text(text_list)
+        sorted_word_counts = sort_dict_by_value(word_counts)
+        return filter_words(sorted_word_counts, min_frequency, max_words)
+
+    def preprocess_text(self, text_list):
+        """Splits a long text into words, eliminates the stopwords.
+
+        Parameters
+        ----------
+        text : string
+            The text to be processed.
+
+        Returns
+        -------
+        words : dict (string, int)
+            Word tokens with associated frequency.
+        """
+        text = ' '.join(text_list)
+
+        stopwords = set([i.lower() for i in self.stopwords])
+        stopwords = stopwords.union(nltk_stopwords)
+
+        words = [
+            i.lower()
+            for i in wordpunct_tokenize(text)
+            if i.lower() not in stopwords and i.isalpha()
+        ]
+        # remove 's
+        words = [word[:-2] if word.lower().endswith("'s") else word
+                 for word in words]
+
+        word_counts = unigrams_and_bigrams(words)
+
+        return word_counts
 
     def get_sentiment_score_from_nltk(self, text_list):
         sentiments = []
