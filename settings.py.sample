@@ -1,3 +1,29 @@
+CRM = {
+    'freshdesk': {
+        'domain': 'your domain',
+        'api_key': 'your api key',
+        'password': 'your password'
+    }
+}
+BACKEND = 'csv'
+IOS_APPS = {
+    'consumer': {
+        'id': 'dummy app id'
+    },
+    'provider': {
+        'id': 'dummy app id'
+    }
+}
+ANDROID_APPS = {
+    'consumer': {
+        'packageName': 'dummy package name',
+        'credentials': {}
+    },
+    'provider': {
+        'packageName': 'dummy package name',
+        'credentials': {}
+    }
+}
 TWITTER = {
     'consumer_key' : 'xyz'
     'consumer_secret' : 'xyz'
