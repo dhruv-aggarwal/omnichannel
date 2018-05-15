@@ -11,3 +11,4 @@ Flask-Migrate==2.1.1
 mysqlclient==1.3.12
 https://github.com/coderadi/FabPolish/archive/v1.2.2.zip
 nltk==3.3
+google-cloud-language==0.26.0
