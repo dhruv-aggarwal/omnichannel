@@ -2,12 +2,18 @@ import csv
 import time
 from settings import BACKEND
 from wordcloud import WordCloud
+import nltk
+nltk.download('vader_lexicon')
+nltk.download('punkt')
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from nltk import tokenize
 
 
 class BaseClient(object):
     def __init__(self):
         self.backend = BACKEND
         self.wc = WordCloud()
+        self.sid = SentimentIntensityAnalyzer()
 
     def save_data(self, list_of_dict):
         if self.backend == 'csv':
@@ -28,3 +34,10 @@ class BaseClient(object):
 
     def get_word_frequencies(self, text_list):
         return self.wc.process_text('\n'.join(text_list))
+
+    def get_sentiment_scores(self, algorithm, text_list):
+        sentiments = []
+        if algorithm == 'nltk':
+            for item in text_list:
+                ss = sid.polarity_scores(item)
+                sentiments.append(ss)
