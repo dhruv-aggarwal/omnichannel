@@ -189,4 +189,7 @@ STOPWORDS = [
     "yours",
     "yourself",
     "yourselves",
+    "Practo",
+    "company",
+    "doctor"
 ]

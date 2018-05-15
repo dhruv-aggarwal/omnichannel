@@ -16,6 +16,8 @@ from ..utils.tokenization import (
     unigrams_and_bigrams, process_tokens, sort_dict_by_value, filter_words
 )
 import re
+from nltk.corpus import stopwords as nltk_stopwords
+from nltk.tokenize import wordpunct_tokenize
 
 
 class BaseClient(object):
@@ -60,21 +62,20 @@ class BaseClient(object):
         words : dict (string, int)
             Word tokens with associated frequency.
         """
-        text = '\n'.join(text_list)
+        text = ' '.join(text_list)
 
         stopwords = set([i.lower() for i in self.stopwords])
+        stopwords = stopwords.union(nltk_stopwords)
 
-        flags = (re.UNICODE if type(text) is unicode else 0)
-        regexp = r"\w[\w']+"
-
-        words = re.findall(regexp, text, flags)
-        # remove stopwords
-        words = [word for word in words if word.lower() not in stopwords]
+        words = [
+            i.lower()
+            for i in wordpunct_tokenize(text)
+            if i.lower() not in stopwords and i.isalpha()
+        ]
         # remove 's
         words = [word[:-2] if word.lower().endswith("'s") else word
                  for word in words]
-        # remove numbers
-        words = [word for word in words if not word.isdigit()]
+
         word_counts = unigrams_and_bigrams(words)
 
         return word_counts
