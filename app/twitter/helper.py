@@ -58,53 +58,17 @@ from settings import TWITTER
 #     )
 
 
-def parse_tweets(tweets):
-    parsed_tweets = []
-
-    for tweet in tweets:
-        if tweet.author.id in TWITTER['practo_ids']:
-            continue
-
-        parsed_tweet = {
-            'twitter_id': tweet.id,
-            'text': tweet.text,
-            'created_at': tweet.created_at,
-            'author': {
-                'twitter_id': tweet.author.id,
-                'name': tweet.author.name,
-                'created_at': tweet.author.created_at,
-                'location': tweet.author.location,
-                'screen_name': tweet.author.screen_name,
-            },
-            'language': tweet.lang,
-            'favorite_count': tweet.favorite_count,
-            'retweet_count': tweet.retweet_count,
-            'reply_to_author_id': tweet.in_reply_to_user_id,
-            'reply_to_twitter_id': tweet.in_reply_to_status_id,
-        }
-
-        # saving sentiment of tweet
-        # parsed_tweet['sentiment'] = get_tweet_sentiment(clean_tweet(tweet.text))
-
-        if tweet.retweet_count > 0:
-            # if tweet has retweets, ensure that it is appended only once
-            if parsed_tweet not in parsed_tweets:
-                parsed_tweets.append(parsed_tweet)
-        else:
-            parsed_tweets.append(parsed_tweet)
-
-    return parsed_tweets
 
 
-def get_tweets(query, count=None):
+def fetch_data(query, count=None):
     '''
     Main function to fetch tweets and parse them.
     '''
+    parsed = []
     # creating object of TwitterClient Class
     client = TwitterClient()
-    # calling function to get tweets
+    # calling functions to get tweets and parse
     tweets = client.fetch_tweets(query, count)
+    parsed = client.parse_tweets(tweets)
 
-    parsed_tweets = parse_tweets(tweets)
-
-    return parsed_tweets
+    return parsed

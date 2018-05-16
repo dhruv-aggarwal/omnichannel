@@ -4,7 +4,7 @@ Omnichannel View for customer reviews, responses and tickets
 # Local Setup
   1) Clone the repository:
 
-  `git clone git@github.com:practo/holonet.git`
+  `git clone git@github.com:dhruv-aggarwal/omnichannel.git`
 
   2) Copy docker-compose.yml:
 

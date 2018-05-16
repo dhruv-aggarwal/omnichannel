@@ -1,20 +1,20 @@
 IOS_APPS = {
     'consumer': {
-        'id': 'dummy app id'
+        'id': 'dummy app id',
     },
     'provider': {
-        'id': 'dummy app id'
+        'id': 'dummy app id',
     }
 }
 
 ANDROID_APPS = {
     'consumer': {
         'packageName': 'dummy package name',
-        'credentials': {}
+        'credentials': {},
     },
     'provider': {
         'packageName': 'dummy package name',
-        'credentials': {}
+        'credentials': {},
     }
 }
 
@@ -22,7 +22,7 @@ CRM = {
     'freshdesk': {
         'domain': 'your domain',
         'api_key': 'your api key',
-        'password': 'your password'
+        'password': 'your password',
     }
 }
 
@@ -31,14 +31,21 @@ TWITTER = {
     'consumer_secret': 'dummy',
     'access_token': 'dummy',
     'access_token_secret': 'dummy',
-    'practo_ids': [],
+    'admin_ids': [],
 }
 
 AZURE = {
-    'url': "https://westcentralus.api.cognitive.microsoft.com/text/analytics",
-    'api_version': "v2.0",
+    'url': 'https://westcentralus.api.cognitive.microsoft.com/text/analytics',
+    'api_version': 'v2.0',
     'keys': ['key1', 'key2'],
-    'sentiment_url_suffix': 'sentiment'
+    'sentiment_url_suffix': 'sentiment',
+}
+
+AWS = {
+    'access_key_id': 'dummy',
+    'secret_access_key': 'dummy/secret',
+    'region': 'us-east-1',
+    'batch_size': 25,
 }
 
 BACKEND = 'csv'

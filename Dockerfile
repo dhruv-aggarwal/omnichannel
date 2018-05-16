@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y -q \
     libxml2-dev \
     libxslt1-dev \
     zlib1g-dev \
-    wget && \
+    wget \
+    vim && \
     apt-get autoremove -y && \
     apt-get clean && \
     apt-get autoclean && \

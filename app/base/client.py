@@ -1,23 +1,28 @@
+import collections
 import csv
+from itertools import izip_longest
+import json
+import logging
+import requests
+import re
 import time
-from ..settings import BACKEND, AZURE
 import nltk
 nltk.download('vader_lexicon')
 nltk.download('punkt')
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
+nltk.download('stopwords')
 from nltk import tokenize
-import requests
-import collections
+from nltk.corpus import stopwords as nltk_stopwords
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from nltk.tokenize import wordpunct_tokenize
+from settings import BACKEND, AZURE, AWS
 from google.cloud import language
 from google.cloud.language import enums
 from google.cloud.language import types
+import boto3
 from ..utils.stopwords import STOPWORDS
 from ..utils.tokenization import (
     unigrams_and_bigrams, process_tokens, sort_dict_by_value, filter_words
 )
-import re
-from nltk.corpus import stopwords as nltk_stopwords
-from nltk.tokenize import wordpunct_tokenize
 
 
 class BaseClient(object):
@@ -65,7 +70,7 @@ class BaseClient(object):
         text = ' '.join(text_list)
 
         stopwords = set([i.lower() for i in self.stopwords])
-        stopwords = stopwords.union(nltk_stopwords)
+        stopwords = stopwords.union(nltk_stopwords.words())
 
         words = [
             i.lower()
@@ -81,14 +86,17 @@ class BaseClient(object):
         return word_counts
 
     def get_sentiment_score_from_nltk(self, text_list):
-        sentiments = []
+        sentiments = {}
+
         for item in text_list:
-            ss = sid.polarity_scores(item)
-            sentiments.append(ss)
+            sentiments[item] = self.sid.polarity_scores(item)
+
         return sentiments
 
     def get_sentiment_score_from_azure(self, text_list):
-        od = collections.OrderedDict()
+        sentiments = {}
+        text_indexes = {}
+
         documents = {'documents': []}
         for index, item in enumerate(text_list):
             documents['documents'].append({
@@ -96,22 +104,24 @@ class BaseClient(object):
                 'language': 'en',
                 'text': item
             })
+            text_indexes[str(index)] = item
         headers = {
-            "Ocp-Apim-Subscription-Key": self.azure.keys[0]
+            "Ocp-Apim-Subscription-Key": self.azure['keys'][0]
         }
         response = requests.post(
             '{base_url}/{version}/{sentiment_url_suffix}'.format(
-                self.azure['url'],
-                self.azure['api_version'],
-                self.azure['sentiment_url_suffix']
+                base_url=self.azure['url'],
+                version=self.azure['api_version'],
+                sentiment_url_suffix=self.azure['sentiment_url_suffix']
             ),
             headers=headers,
             json=documents
         )
         response = response.json()
         for item in response['documents']:
-            od[item['id']] = item['score']
-        return od.values()
+            sentiments[text_indexes[item['id']]] = item['score']
+
+        return sentiments
 
     def get_sentiment_score_from_gcloud(self, text_list):
         sentiments = []
@@ -126,6 +136,35 @@ class BaseClient(object):
                 'score': annotations.document_sentiment.score,
                 'magnitude': annotations.document_sentiment.magnitude
             })
+
+        return sentiments
+
+    def get_sentiment_score_from_amazon_comprehend(self, text_list):
+        sentiments = {}
+
+        comprehend = boto3.client(
+            'comprehend',
+            aws_access_key_id=AWS['access_key_id'],
+            aws_secret_access_key=AWS['secret_access_key'],
+            region_name=AWS['region']
+        )
+        batched_text_list = [
+            text_list[i:i + AWS['batch_size']]
+            for i in range(0, len(text_list), AWS['batch_size'])
+        ]
+        for index, batch_text_list in enumerate(batched_text_list):
+            try:
+                batch_response = comprehend.batch_detect_sentiment(
+                    TextList=batch_text_list,
+                    LanguageCode='en'
+                )
+            except Exception as e:
+                logging.exception(e)
+            for response in batch_response['ResultList']:
+                sentiments[batch_text_list[response['Index']]] = {
+                    'sentiment': response['Sentiment'],
+                    'score': response['SentimentScore'],
+                }
 
         return sentiments
 
