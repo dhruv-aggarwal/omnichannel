@@ -72,14 +72,12 @@ class BaseClient(object):
         stopwords = set([i.lower() for i in self.stopwords])
         stopwords = stopwords.union(nltk_stopwords.words())
 
+        # remove 's
         words = [
-            i.lower()
+            i.lower()[:-2] if i.lower().endswith("'s") else i.lower()
             for i in wordpunct_tokenize(text)
             if i.lower() not in stopwords and i.isalpha()
         ]
-        # remove 's
-        words = [word[:-2] if word.lower().endswith("'s") else word
-                 for word in words]
 
         word_counts = unigrams_and_bigrams(words)
 
@@ -124,7 +122,8 @@ class BaseClient(object):
         return sentiments
 
     def get_sentiment_score_from_gcloud(self, text_list):
-        sentiments = []
+        sentiments = {}
+
         client = language.LanguageServiceClient()
         for index, text in enumerate(text_list):
             document = types.Document(
@@ -132,10 +131,10 @@ class BaseClient(object):
                 type=enums.Document.Type.PLAIN_TEXT
             )
             annotations = client.analyze_sentiment(document=document)
-            sentiments.append({
+            sentiments[text] = {
                 'score': annotations.document_sentiment.score,
                 'magnitude': annotations.document_sentiment.magnitude
-            })
+            }
 
         return sentiments
 
