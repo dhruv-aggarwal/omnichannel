@@ -1,0 +1,19 @@
+version: '2'
+services:
+  app:
+    build: .
+    volumes:
+      - .:/www/omnichannel
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    ports:
+      - 1786:1786
+
+  mysql:
+      image: mysql/mysql-server:5.7
+      environment:
+        - MYSQL_ALLOW_EMPTY_PASSWORD=true
+        - MYSQL_DATABASE=omnichannel
+        - MYSQL_ROOT_HOST=localhost
