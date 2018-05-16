@@ -14,3 +14,6 @@ ipython==5.4.1
 #https://github.com/coderadi/FabPolish/archive/v1.2.2.zip
 uwsgi==2.0.17
 flask-script==2.0.6
+tweepy==3.6.0
+ipython==5.4.1
+boto3==1.7.21
