@@ -10,19 +10,19 @@ import nltk
 nltk.download('vader_lexicon')
 nltk.download('punkt')
 nltk.download('stopwords')
+nltk.download('wordnet')
 from nltk import tokenize
 from nltk.corpus import stopwords as nltk_stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.tokenize import wordpunct_tokenize
+from nltk.stem import WordNetLemmatizer
 from settings import BACKEND, AZURE, AWS
-from google.cloud.language import enums, types, LanguageServiceClient
+# from google.cloud.language import enums, types, LanguageServiceClient
 import boto3
 from ..utils.stopwords import STOPWORDS
 from ..utils.tokenization import (
     unigrams_and_bigrams, process_tokens, sort_dict_by_value, filter_words
 )
-nltk.download('wordnet')
-from nltk.stem import WordNetLemmatizer
 
 
 class BaseClient(object):
@@ -50,12 +50,21 @@ class BaseClient(object):
             dict_writer.writeheader()
             dict_writer.writerows(toCSV)
 
-    def create_word_cloud(self, text_list, min_frequency=10, max_words=100):
-        word_counts = self.preprocess_text(text_list)
-        sorted_word_counts = sort_dict_by_value(word_counts)
+    def create_word_cloud(self, text_list):
+        word_counts = []
+
+        for text in text_list:
+            for word, frequency in self.preprocess_text(text):
+                word_counts.append({
+                    'word': word,
+                    'review_id': text['id']
+                })
+
+
+
         return filter_words(sorted_word_counts, min_frequency, max_words)
 
-    def preprocess_text(self, text_list):
+    def preprocess_text(self, text):
         """Splits a long text into words, eliminates the stopwords.
 
         Parameters
@@ -68,8 +77,6 @@ class BaseClient(object):
         words : dict (string, int)
             Word tokens with associated frequency.
         """
-        text = ' '.join(text_list)
-
         stopwords = set([i.lower() for i in self.stopwords])
         stopwords = stopwords.union(nltk_stopwords.words())
 
