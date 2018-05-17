@@ -23,6 +23,7 @@ from ..utils.stopwords import STOPWORDS
 from ..utils.tokenization import (
     unigrams_and_bigrams, process_tokens, sort_dict_by_value, filter_words
 )
+from nltk.stem import WordNetLemmatizer
 
 
 class BaseClient(object):
@@ -31,6 +32,7 @@ class BaseClient(object):
         self.sid = SentimentIntensityAnalyzer()
         self.azure = AZURE
         self.stopwords = STOPWORDS
+        self.wordnet_lemmatizer = WordNetLemmatizer()
 
     def save_data(self, list_of_dict):
         if self.backend == 'csv':
@@ -78,7 +80,7 @@ class BaseClient(object):
             for i in wordpunct_tokenize(text)
             if i.lower() not in stopwords and i.isalpha()
         ]
-
+        words = self.lemmatize(words)
         word_counts = unigrams_and_bigrams(words)
 
         return word_counts
@@ -174,5 +176,18 @@ class BaseClient(object):
             return self.get_sentiment_score_from_azure(text_list)
         elif algorithm == 'gcloud':
             return self.get_sentiment_score_from_gcloud(text_list)
+        elif algorithm == 'az_comprehend':
+            return self.get_sentiment_score_from_amazon_comprehend(text_list)
         else:
             raise Exception('Invalid algorithm')
+
+    def lemmatize(self, words):
+        lemmatized_words = set()
+        for word in words:
+            if hasattr(word, "__iter__"):
+                lemmatized_words.add(
+                    self.wordnet_lemmatizer.lemmatize(word[0], word[1])
+                )
+            else:
+                lemmatized_words.add(self.wordnet_lemmatizer.lemmatize(word))
+        return list(lemmatized_words)
