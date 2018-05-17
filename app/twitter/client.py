@@ -51,6 +51,13 @@ class TwitterClient(BaseClient):
 
         return fetched_tweets
 
+    def push_data_to_backend(self):
+        parsed = []
+        for query in QUERIES:
+            reviews = self.fetch_tweets(query, None)
+            parsed += self.parse_tweets(reviews)
+        self.save_review_data(reviews)
+
     def parse_tweets(self, tweets):
         parsed_tweets = []
 
@@ -60,21 +67,24 @@ class TwitterClient(BaseClient):
                     continue
 
                 parsed_tweet = {
-                    'twitter_id': tweet.id,
+                    'source': 'Twitter',
                     'text': tweet.text,
-                    'created_at': tweet.created_at,
-                    'author': {
-                        'twitter_id': tweet.author.id,
-                        'name': tweet.author.name,
-                        'created_at': tweet.author.created_at,
-                        'location': tweet.author.location,
-                        'screen_name': tweet.author.screen_name,
-                    },
-                    'language': tweet.lang,
-                    'favorite_count': tweet.favorite_count,
-                    'retweet_count': tweet.retweet_count,
-                    'reply_to_author_id': tweet.in_reply_to_user_id,
-                    'reply_to_twitter_id': tweet.in_reply_to_status_id,
+                    'date': tweet.created_at,
+                    'metacontent': {
+                        'twitter_id': tweet.id,
+                        'author': {
+                            'twitter_id': tweet.author.id,
+                            'name': tweet.author.name,
+                            'created_at': tweet.author.created_at,
+                            'location': tweet.author.location,
+                            'screen_name': tweet.author.screen_name,
+                        },
+                        'language': tweet.lang,
+                        'favorite_count': tweet.favorite_count,
+                        'retweet_count': tweet.retweet_count,
+                        'reply_to_author_id': tweet.in_reply_to_user_id,
+                        'reply_to_twitter_id': tweet.in_reply_to_status_id,
+                    }
                 }
 
                 if tweet.retweet_count > 0:
