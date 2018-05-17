@@ -64,3 +64,6 @@ SQLALCHEMY_DATABASE_URI = 'mysql://{}:{}@{}/{}'.format(
     DB_USER, DB_PASS, DB_HOST, DB_NAME
 )
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+REVIEW_DATA_FILE = 'review_data.py'
+WORDCLOUD_DATA_FILE = 'wordcloud_data.py'
