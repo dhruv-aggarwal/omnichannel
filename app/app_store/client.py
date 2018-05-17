@@ -1,6 +1,7 @@
 import requests
 from settings import IOS_APPS
 from ..base import BaseClient
+from datetime import datetime
 
 
 class AppStoreClient(BaseClient):
@@ -48,6 +49,11 @@ class AppStoreClient(BaseClient):
             sorting_order
         )
 
+    def push_data_to_backend(self):
+        reviews = self.fetch_consumer_app_reviews()
+        reviews += self.fetch_provider_app_reviews()
+        self.save_review_data(reviews)
+
     def parse_response(self, responses):
         parsed = []
         for item in responses:
@@ -55,13 +61,17 @@ class AppStoreClient(BaseClient):
                 if 'author' not in entry:
                     continue
                 parsed.append({
-                    'version': entry['im:version']['label'],
-                    'title': entry['title']['label'],
-                    'vote_count': entry['im:voteCount']['label'],
-                    'rating': entry['im:rating']['label'],
-                    'id': entry['id']['label'],
-                    'review': entry['content']['label'],
-                    'author_url': entry['author']['uri']['label'],
-                    'author': entry['author']['name']['label']
+                    'metacontent': {
+                        'version': entry['im:version']['label'],
+                        'title': entry['title']['label'],
+                        'vote_count': entry['im:voteCount']['label'],
+                        'rating': entry['im:rating']['label'],
+                        'source_id': entry['id']['label'],
+                        'author_url': entry['author']['uri']['label'],
+                        'author': entry['author']['name']['label']
+                    },
+                    'text': entry['content']['label'],
+                    'source': 'AppStore (iOS)',
+                    'date': datetime.strftime(datetime.utcnow(), '%Y-%m-%d')
                 })
         return parsed

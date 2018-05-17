@@ -14,7 +14,7 @@ from nltk import tokenize
 from nltk.corpus import stopwords as nltk_stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.tokenize import wordpunct_tokenize
-from settings import BACKEND, AZURE, AWS
+from settings import *
 from google.cloud.language import enums, types, LanguageServiceClient
 import boto3
 from ..utils.stopwords import STOPWORDS
@@ -33,22 +33,32 @@ class BaseClient(object):
         self.stopwords = STOPWORDS
         self.wordnet_lemmatizer = WordNetLemmatizer()
 
-    def save_data(self, list_of_dict):
-        if self.backend == 'csv':
-            file_name = "{source}|{timestamp}".format(
-                source=self.__class__.__name__,
-                timestamp=time.time()
-            )
-            self.write_as_csv(file_name, list_of_dict)
+    def save_review_data(self, item_list):
+        if self.backend == 'file':
+            existing_data = []
+            try:
+                existing_data = self.read_file(REVIEW_DATA_FILE)
+            except:
+                print 'file to haiye hi nahi'
+            existing_data = existing_data + item_list
+            print len(existing_data)
+            self.write_to_file(REVIEW_DATA_FILE, existing_data)
         else:
             print 'Unknown source'
 
-    def write_as_csv(self, file_name, list_of_dict):
-        keys = list_of_dict[0].keys()
-        with open(file_name, 'wb') as output_file:
-            dict_writer = csv.DictWriter(output_file, keys)
-            dict_writer.writeheader()
-            dict_writer.writerows(toCSV)
+    def read_file(self, file_name):
+        with open(file_name, 'r') as file:
+            content = file.read()
+            if not content:
+                return []
+            try:
+                return json.loads(content)
+            except:
+                return []
+
+    def write_to_file(self, file_name, item_list):
+        with open(file_name, 'w+') as file:
+            file.write(json.dumps(item_list))
 
     def create_word_cloud(self, text_list, min_frequency=10, max_words=100):
         word_counts = self.preprocess_text(text_list)

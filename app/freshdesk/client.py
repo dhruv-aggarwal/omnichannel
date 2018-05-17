@@ -5,7 +5,7 @@ from ..base import BaseClient
 
 class FreshdeskClient(BaseClient):
     def __init__(self):
-        super(Freshdesk, self).__init__()
+        super(FreshdeskClient, self).__init__()
         self.domain = CRM['freshdesk']['domain']
         self.api_key = CRM['freshdesk']['api_key']
         self.password = CRM['freshdesk']['password']
@@ -60,23 +60,30 @@ class FreshdeskClient(BaseClient):
             responses += response.json()
         return self.parse_response(responses)
 
+    def push_data_to_backend(self):
+        reviews = self.fetch_tickets()
+        self.save_review_data(reviews)
+
     def parse_response(self, responses):
         parsed = []
         for item in responses:
             parsed.append({
-                'subject': item['subject'],
-                'created_at': item['created_at'],
-                'description_text': item['description_text'],
-                'product_id': item['product_id'],
-                'email': item.get('email'),
-                'sentiment': item['custom_fields'].get('sentiment'),
-                'csat_rating': item['custom_fields'].get('csat_rating'),
-                'country': item['custom_fields'].get('country'),
-                'platform': item['custom_fields'].get('platform'),
-                'practo_source': item['custom_fields'].get('practo_source'),
-                'practo_product': item['custom_fields'].get('practo_product'),
-                'source': self.source_map.get(item['source']),
-                'priority': self.priority_map.get(item['priority']),
-                'type': item['type']
+                'date': item['created_at'],
+                'source': 'FreshDesk',
+                'text': item['description_text'],
+                'metacontent': {
+                    'subject': item['subject'],
+                    'product_id': item['product_id'],
+                    'email': item.get('email'),
+                    'sentiment': item['custom_fields'].get('sentiment'),
+                    'csat_rating': item['custom_fields'].get('csat_rating'),
+                    'country': item['custom_fields'].get('country'),
+                    'platform': item['custom_fields'].get('platform'),
+                    'practo_source': item['custom_fields'].get('practo_source'),
+                    'practo_product': item['custom_fields'].get('practo_product'),
+                    'source': self.source_map.get(item['source']),
+                    'priority': self.priority_map.get(item['priority']),
+                    'type': item['type']
+                }
             })
         return parsed
