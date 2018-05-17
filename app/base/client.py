@@ -15,14 +15,13 @@ from nltk.corpus import stopwords as nltk_stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.tokenize import wordpunct_tokenize
 from settings import BACKEND, AZURE, AWS
-from google.cloud import language
-from google.cloud.language import enums
-from google.cloud.language import types
+from google.cloud.language import enums, types, LanguageServiceClient
 import boto3
 from ..utils.stopwords import STOPWORDS
 from ..utils.tokenization import (
     unigrams_and_bigrams, process_tokens, sort_dict_by_value, filter_words
 )
+nltk.download('wordnet')
 from nltk.stem import WordNetLemmatizer
 
 
