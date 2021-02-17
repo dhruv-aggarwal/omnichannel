@@ -1,7 +1,6 @@
 # from textblob import TextBlob
-import re
+# import re
 from .client import TwitterClient
-from settings import TWITTER
 
 
 # def get_tweet_sentiment(tweet):
